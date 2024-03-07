@@ -16,7 +16,7 @@ bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 kb = ReplyKeyboardMarkup(resize_keyboard=True)
-kb.add(KeyboardButton('Player_one'), KeyboardButton('Player_two'), KeyboardButton('Shop'))
+kb.add(KeyboardButton('Player_one'), KeyboardButton('Player_two'), KeyboardButton('Shop'), KeyboardButton('Atack'))
 
 
 kb2 = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -63,6 +63,24 @@ async def start_tasks():
     task1 = asyncio.create_task(main())
     task2 = asyncio.create_task(periodic_time_to_pay())
     await asyncio.gather(task1, task2)
+
+
+@dp.message_handler(text=['AK-47'], state=Form.player1)
+async def atack_player_one(message: types.Message):
+    if player_one.pay == 30:
+        player_one.weapon.append('AK-47')
+
+
+@dp.message_handler(text=['Atack'], state=Form.player1)
+async def atack_player_one(message: types.Message):
+    player_two.hp -= 30
+    await bot.send_message(chat_id=message.from_user.id, text=player_two.hp)
+    
+    
+@dp.message_handler(text=['Atack'], state=Form.player2)
+async def atack_player_two(message: types.Message):
+    player_one.hp -= 30
+    await bot.send_message(chat_id=message.from_user.id, text=player_one.hp)
 
 
 @dp.message_handler(commands=['player_one'])
